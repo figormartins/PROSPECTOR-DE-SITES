@@ -58,9 +58,8 @@ def publicar(staging):
                         capture_output=True, text=True, timeout=300)
     if r.returncode != 0:
         print('ERRO ao publicar na Vercel:\n' + r.stderr.strip())
-        return None
-    linhas = [l.strip() for l in r.stdout.splitlines() if l.strip().startswith('http')]
-    return linhas[-1] if linhas else r.stdout.strip()
+        return False
+    return True
 
 def main():
     args = sys.argv[1:]
@@ -92,11 +91,13 @@ def main():
     if teste:
         montar_teste(staging, pasta_base)
 
-    url_deploy = publicar(staging)
-    if not url_deploy:
+    if not publicar(staging):
         sys.exit(1)
 
-    host = dominio or url_deploy.split('//', 1)[-1].rstrip('/')
+    # O stdout de `vercel deploy` varia por versão da CLI (URL simples ou JSON) e a URL que
+    # ele imprime é a do deployment específico (com hash), não o alias estável do projeto —
+    # por isso não fazemos parsing: o domínio de produção é sempre previsível.
+    host = dominio or '%s.vercel.app' % projeto
     if teste:
         print('OK: https://%s/%s/teste/' % (host, pasta_base))
     if slugs:
