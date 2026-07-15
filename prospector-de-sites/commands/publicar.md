@@ -1,17 +1,17 @@
 ---
-description: Publica as páginas redesenhadas na HostGator e retorna as URLs públicas
+description: Publica as páginas redesenhadas na Vercel e retorna as URLs públicas
 argument-hint: "[nome do cliente ou todos]"
 ---
 
-Publique páginas na HostGator seguindo a skill `deploy-hostgator`.
+Publique páginas na Vercel seguindo a skill `deploy-vercel`.
 
 ## Passos
 
-1. Leia `prospector-config.json`. Se os dados da HostGator não estiverem preenchidos, colete-os agora (usuário, domínio, servidor — e oriente o usuário a preencher a senha diretamente no config, nunca no chat) — não prossiga sem eles.
+1. Leia `prospector-config.json`. Se o bloco `vercel` não estiver preenchido (falta `projeto`), colete-o agora direto no chat (não é dado sensível) — não prossiga sem ele.
 2. Determine o que publicar: `$ARGUMENTS` (um cliente ou "todos"), ou liste as páginas com status `redesenhado` em `leads.md` e pergunte.
 3. **Gere a página-capa de cada cliente**: preencha `references/capa-proposta-template.html` (skill `proposta-email`) com os dados do lead + assinatura do config e salve como `sites/[slug]/proposta.html`. É ela que vai no e-mail de proposta.
-4. **Publique seguindo a skill `deploy-hostgator`**, nesta ordem: tente o FTP silencioso do sandbox; se a rede bloquear, use o publicador automático local — garanta os 4 arquivos do publicador na pasta, monte a `fila-publicacao.txt` com página (`index.html`) e capa (`proposta.html`) de cada cliente e aguarde ~90s: a tarefa agendada publica sozinha (confira a fila renomeada e o `publicador-log.txt`). Se a tarefa ainda não foi instalada, peça o duplo clique único no `instalar-publicador.bat`. Sem cPanel, sem login, senha só no config.
-5. **Verificação HTTPS (bloqueante)**: abra cada URL com `https://` e confirme que carrega com cadeado válido. Se o HTTPS falhar, siga a seção "HTTPS obrigatório" da skill `deploy-hostgator` (AutoSSL no cPanel) antes de considerar publicado — link `http://` NUNCA vai para cliente.
+4. **Publique seguindo a skill `deploy-vercel`**: rode `python3 references/publicar_vercel.py [pasta_conectada]` — ele sincroniza todos os clientes de `sites/` e roda `vercel deploy --prod` na hora, sem fila, sem instalador, sem ação nenhuma do usuário.
+5. **Verificação HTTPS**: abra cada URL com `https://` e confirme que carrega com cadeado válido (a Vercel já emite HTTPS automático, então isso normalmente já vem pronto — só confira).
 6. Atualize `leads.md` e o banco do dashboard: status `publicado` + URL pública nova.
 
 ## Saída
